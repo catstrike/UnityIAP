@@ -63,7 +63,7 @@ extern "C" {
 
 
     // MARK: - Public Methods
-    void storeKit_validateProductIdentifiers(int tag, const char **ids, int count, ProductsCallback onDone) {
+    void storeKit_validateProductIdentifiers(int tag, const char **ids, int count, ProductsCallback onDone, ProductsErrorCallback onError) {
         NSLog(@"Requesting products!");
 
         StoreKitPlugin *plugin = [StoreKitPlugin shared];
@@ -83,6 +83,9 @@ extern "C" {
             NSLog(@"Done!");
         } onError:^(NSString * error) {
             NSLog(@"Error: %@", error);
+            const char * errorCString = makeStringCopy(error);
+            onError(tag, errorCString);
+            free((void *) errorCString);
         }];
     }
     

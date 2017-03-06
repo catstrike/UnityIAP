@@ -4,7 +4,7 @@ using System;
 using AOT;
 using Plugins.StoreCommon;
 
-#if UNITY_IOS // && !UNITY_EDITOR
+#if UNITY_IOS
 namespace Plugins.StoreKitPlugin
 {	
 	public class StoreKitBridge 
@@ -16,6 +16,7 @@ namespace Plugins.StoreKitPlugin
 		}
 		
 		delegate void ProductsCallback(int tag, IntPtr productInterop, int count);
+		delegate void ProductsErrorCallback(int tag, string error);
 		delegate void TransactionStatePurchasedCallback(string transactionId, string productId, string receipt);
 		delegate void TransactionStateErrorCallback(string transactionId, string productId, string error);
 		#endregion
@@ -33,7 +34,7 @@ namespace Plugins.StoreKitPlugin
 		
 		#region - Interop
 		[DllImport("__Internal")]
-		static extern void storeKit_validateProductIdentifiers(int tag, string[] ids, int count, ProductsCallback onDone);
+		static extern void storeKit_validateProductIdentifiers(int tag, string[] ids, int count, ProductsCallback onDone, ProductsErrorCallback onError);
 		
 		[DllImport("__Internal")]
 		static extern void storeKit_purchase(string productId);
@@ -63,6 +64,19 @@ namespace Plugins.StoreKitPlugin
 			}
 			
 			callback.onProducts(products);
+		}
+
+		[MonoPInvokeCallback(typeof(ProductsErrorCallback))]
+		static void validateProductIdentifiersFailedCallbackHandler(int tag, string error)
+		{
+			var callback = popCallback(tag);
+
+			if (callback == null) {
+				UnityEngine.Debug.LogError("[StoreKitBridge] Internal error!");
+				return;
+			}
+
+			callback.onError(error);
 		}
 		
 		[MonoPInvokeCallback(typeof(TransactionStatePurchasedCallback))]
@@ -106,7 +120,8 @@ namespace Plugins.StoreKitPlugin
 			});
 			
 			storeKit_validateProductIdentifiers(tag, idsArray, count:idsArray.Length,
-														      onDone:validateProductIdentifiersCallbackHandler);
+														      onDone:validateProductIdentifiersCallbackHandler,
+															 onError:validateProductIdentifiersFailedCallbackHandler);
 		}
 		
 		public static void purchaseProduct(string productId)
