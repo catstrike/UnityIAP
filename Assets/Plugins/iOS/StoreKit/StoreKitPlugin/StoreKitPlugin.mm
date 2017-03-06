@@ -121,7 +121,7 @@
     NSArray<SKPaymentTransaction *> * transactions = [SKPaymentQueue defaultQueue].transactions;
     
     for (SKPaymentTransaction * transaction in transactions) {
-        if (transaction.transactionState != transaction.transactionState) {
+        if (transaction.transactionState != SKPaymentTransactionStatePurchased) {
             continue;
         }
         
