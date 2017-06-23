@@ -147,6 +147,13 @@
                 // Should finish transaction
                 break;
             case SKPaymentTransactionStateFailed: {
+                
+                if (transaction.error.code == SKErrorPaymentCancelled) {
+                    [self.delegate transactionCanceled:transaction.transactionIdentifier
+                                           withProduct:transaction.payment.productIdentifier];
+                    break;
+                }
+                
                 NSString *error = (transaction.error) ? [transaction.error description] : @"";
                 
                 [self.delegate transaction:transaction.transactionIdentifier

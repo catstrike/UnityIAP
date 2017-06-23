@@ -12,20 +12,30 @@
 @implementation StoreKitPluginHandler {
     TransactionStatePurchasedCallback _purchasedCallback;
     TransactionStateErrorCallback _errorCallback;
+    TransactionStateCanceledCallback _canceledCallback;
 }
 
 #pragma mark - LifeCycle
-- (nullable instancetype)initWithPurchasedCallback:(nullable TransactionStatePurchasedCallback)purchasedCallback andErrorCallback:(nullable TransactionStateErrorCallback)errorCallback {
+- (nullable instancetype)initWithPurchasedCallback:(nullable TransactionStatePurchasedCallback)purchasedCallback
+                                  andErrorCallback:(nullable TransactionStateErrorCallback)errorCallback
+                               andCanceledCallback:(nullable TransactionStateCanceledCallback)canceledCallback
+{
     if (self = [super init]) {
         _purchasedCallback = purchasedCallback;
         _errorCallback = errorCallback;
+        _canceledCallback = canceledCallback;
     }
     
     return self;
 }
 
-+ (nullable instancetype)withPurchasedCallback:(nullable TransactionStatePurchasedCallback)purchasedCallback andErrorCallback:(nullable TransactionStateErrorCallback)errorCallback {
-    return [[StoreKitPluginHandler alloc] initWithPurchasedCallback:purchasedCallback andErrorCallback:errorCallback];
++ (nullable instancetype)withPurchasedCallback:(nullable TransactionStatePurchasedCallback)purchasedCallback
+                              andErrorCallback:(nullable TransactionStateErrorCallback)errorCallback
+                           andCanceledCallback:(nullable TransactionStateCanceledCallback)canceledCallback
+{
+    return [[StoreKitPluginHandler alloc] initWithPurchasedCallback:purchasedCallback
+                                                   andErrorCallback:errorCallback
+                                                andCanceledCallback:canceledCallback];
 }
 
 #pragma mark - StoreKitPluginDelegate
@@ -59,6 +69,20 @@
     free((void *)transactionIdCString);
     free((void *)productIdCString);
     free((void *)errorCString);
+}
+
+- (void)transactionCanceled:(nonnull NSString *)transactionId withProduct:(nonnull NSString *)productId {
+    if (_errorCallback == NULL) {
+        return;
+    }
+    
+    const char * transactionIdCString = makeStringCopy(transactionId);
+    const char * productIdCString = makeStringCopy(productId);
+    
+    _canceledCallback(transactionIdCString, productIdCString);
+    
+    free((void *)transactionIdCString);
+    free((void *)productIdCString);
 }
 
 @end

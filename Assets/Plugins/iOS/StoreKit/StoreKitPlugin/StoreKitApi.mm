@@ -15,6 +15,7 @@ extern "C" {
     // MARK: - Global state
     TransactionStatePurchasedCallback _purchasedCallback = NULL;
     TransactionStateErrorCallback _errorCallback = NULL;
+    TransactionStateCanceledCallback _canceledCallback = NULL;
 
     // MARK: - Internal methods
     void logProducts(NSArray<SKProduct *> *products) {
@@ -103,14 +104,26 @@ extern "C" {
         _purchasedCallback = callback;
         
         StoreKitPlugin * plugin = [StoreKitPlugin shared];
-        plugin.delegate = [StoreKitPluginHandler withPurchasedCallback:_purchasedCallback andErrorCallback:_errorCallback];
+        plugin.delegate = [StoreKitPluginHandler withPurchasedCallback:_purchasedCallback
+                                                      andErrorCallback:_errorCallback
+                                                   andCanceledCallback:_canceledCallback];
     }
     
     void storeKit_setTransactionStateErrorCallback(TransactionStateErrorCallback callback) {
         _errorCallback = callback;
         
         StoreKitPlugin * plugin = [StoreKitPlugin shared];
-        plugin.delegate = [StoreKitPluginHandler withPurchasedCallback:_purchasedCallback andErrorCallback:_errorCallback];
+        plugin.delegate = [StoreKitPluginHandler withPurchasedCallback:_purchasedCallback
+                                                      andErrorCallback:_errorCallback
+                                                   andCanceledCallback:_canceledCallback];    }
+    
+    void storeKit_setTransactionStateCanceledCallback(TransactionStateCanceledCallback callback) {
+        _canceledCallback = callback;
+        
+        StoreKitPlugin * plugin = [StoreKitPlugin shared];
+        plugin.delegate = [StoreKitPluginHandler withPurchasedCallback:_purchasedCallback
+                                                      andErrorCallback:_errorCallback
+                                                   andCanceledCallback:_canceledCallback];
     }
     
     void storeKit_triggerUnfinishedTransactions() {

@@ -12,9 +12,6 @@ namespace Plugins.StoreKitPlugin
 
 
 #region - Events
-        public static event Action<string, string, string> onPurchased;
-        public static event Action<string, string, string> onError;
-
 
 #endregion
 

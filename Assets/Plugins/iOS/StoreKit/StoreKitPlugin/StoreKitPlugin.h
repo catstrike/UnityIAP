@@ -19,6 +19,7 @@ typedef void (^OnErrorBlock)(NSString * __nonnull);
 @required
 - (void)transaction:(nonnull NSString *)transactionId withProduct:(nonnull NSString *)productId purchasedWithReceipt:(nonnull NSString *)receipt;
 - (void)transaction:(nonnull NSString *)transactionId withProduct:(nonnull NSString *)productId failedWithError:(nonnull NSString *)error;
+- (void)transactionCanceled:(nonnull NSString *)transactionId withProduct:(nonnull NSString *)productId;
 @end
 
 @interface StoreKitPlugin: NSObject<SKProductsRequestDelegate, SKPaymentTransactionObserver>

@@ -19,11 +19,13 @@ namespace Plugins.StoreKitPlugin
 		delegate void ProductsErrorCallback(int tag, string error);
 		delegate void TransactionStatePurchasedCallback(string transactionId, string productId, string receipt);
 		delegate void TransactionStateErrorCallback(string transactionId, string productId, string error);
+		delegate void TransactionStateCanceledCallback(string transactionId, string productId);
 		#endregion
 		
 		#region - Events
 		public static event Action<string, string, string> onPurchased;
 		public static event Action<string, string, string> onError;
+		public static event Action<string, string> onCanceled;
 		#endregion
 		
 		#region - State
@@ -47,6 +49,9 @@ namespace Plugins.StoreKitPlugin
 
 		[DllImport("__Internal")]
 		static extern void storeKit_setTransactionStateErrorCallback(TransactionStateErrorCallback callback);
+
+		[DllImport("__Internal")]
+		static extern void storeKit_setTransactionStateCanceledCallback(TransactionStateCanceledCallback callback);
 
 		[DllImport("__Internal")]
 		static extern void storeKit_triggerUnfinishedTransactions();
@@ -94,6 +99,14 @@ namespace Plugins.StoreKitPlugin
 				onError(transactionId, productId, error);
 			}
 		}
+
+		[MonoPInvokeCallback(typeof(TransactionStateCanceledCallback))]
+		static void transactionStateCanceledCallback(string transactionId, string productId)
+		{
+			if (onCanceled != null) {
+				onCanceled(transactionId, productId);
+			}
+		}
 		#endregion
 		
 		#region - Public Methods
@@ -105,6 +118,7 @@ namespace Plugins.StoreKitPlugin
             
             storeKit_setTransactionStatePurchasedCallback(transactionStatePurchasedCallback);
             storeKit_setTransactionStateErrorCallback(transactionStateErrorCallback);
+			storeKit_setTransactionStateCanceledCallback(transactionStateCanceledCallback);
 
             _initialized = true;
 		}

@@ -19,3 +19,4 @@ typedef void (*ProductsErrorCallback)(int, const char *);
 typedef void (*ProductsCallback)(int, ProductInterop *, int);
 typedef void (*TransactionStatePurchasedCallback)(const char *, const char *, const char *);
 typedef void (*TransactionStateErrorCallback)(const char *, const char *, const char *);
+typedef void (*TransactionStateCanceledCallback)(const char *, const char *);

@@ -12,7 +12,11 @@
 
 @interface StoreKitPluginHandler : NSObject<StoreKitPluginDelegate>
 
-- (nullable instancetype)initWithPurchasedCallback:(nullable TransactionStatePurchasedCallback)purchasedCallback andErrorCallback:(nullable TransactionStateErrorCallback)errorCallback;
-+ (nullable instancetype)withPurchasedCallback:(nullable TransactionStatePurchasedCallback)purchasedCallback andErrorCallback:(nullable TransactionStateErrorCallback)errorCallback;
+- (nullable instancetype)initWithPurchasedCallback:(nullable TransactionStatePurchasedCallback)purchasedCallback
+                                  andErrorCallback:(nullable TransactionStateErrorCallback)errorCallback
+                               andCanceledCallback:(nullable TransactionStateCanceledCallback)canceledCallback;
 
++ (nullable instancetype)withPurchasedCallback:(nullable TransactionStatePurchasedCallback)purchasedCallback
+                              andErrorCallback:(nullable TransactionStateErrorCallback)errorCallback
+                           andCanceledCallback:(nullable TransactionStateCanceledCallback)canceledCallback;
 @end
